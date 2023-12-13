@@ -28,17 +28,13 @@ class Joystick : public rclcpp::Node{
       if(!brake_inverse) cmd.brake_cmd = (msg.axes[brake_axis_index] + 1.0) * 3000.0;
       else cmd.brake_cmd = (-1.0 * msg.axes[brake_axis_index] + 1.0) * 3000.0;
       cmd.steering_cmd = msg.axes[steering_axis_index] * 450.0;
-      if(msg.buttons[shiftup_button_index] == 1 && gear_position < 6 && !shiftup_pressed){
-        gear_position = gear_position + 1;
-        shiftup_pressed = true;
-      }
-      if(msg.buttons[shiftdown_button_index] == 1 && gear_position > 1 && !shiftdown_pressed){
-        gear_position = gear_position - 1;
-        shiftdown_pressed = true;
-      }
-      if(msg.buttons[shiftup_button_index] == 0) shiftup_pressed = false;
-      if(msg.buttons[shiftdown_button_index] == 0) shiftdown_pressed = false;
+      if(msg.buttons[shiftup_button_index] == 1 && gear_position < 6 && !shiftup_pressed) gear_position++;
+      if(msg.buttons[shiftdown_button_index] == 1 && gear_position > 1 && !shiftdown_pressed) gear_position--;
       cmd.gear_cmd = gear_position;
+      if(msg.buttons[shiftup_button_index] == 1) shiftup_pressed = true;
+      else shiftup_pressed = false;
+      if(msg.buttons[shiftdown_button_index] == 1) shiftdown_pressed = true;
+      else shiftdown_pressed = false;
       return cmd;
     }
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_;
